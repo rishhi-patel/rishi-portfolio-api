@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express")
 const puppeteer = require("puppeteer")
 const path = require("path")
@@ -9,7 +10,9 @@ app.use(express.json()) // Middleware to parse JSON
 
 // Function to capture a screenshot and store it temporarily
 async function captureScreenshot(url) {
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.connect({
+    browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS_API_KEY}`,
+  })
   const page = await browser.newPage()
   await page.goto(url)
 
