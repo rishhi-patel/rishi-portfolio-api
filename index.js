@@ -18,7 +18,7 @@ async function captureScreenshot(url) {
 
   // Use the /tmp directory for temporary storage
   const tempPath = `/tmp/screenshot_${Date.now()}.png`
-  await setTimeout(async () => await page.screenshot({ path: tempPath }), 5000)
+  await page.screenshot({ path: tempPath })
   await browser.close()
 
   return tempPath
