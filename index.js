@@ -1,7 +1,6 @@
 require("dotenv").config()
 const express = require("express")
 const puppeteer = require("puppeteer")
-const path = require("path")
 const fs = require("fs")
 const app = express()
 const port = 3000
@@ -9,12 +8,15 @@ const port = 3000
 app.use(express.json()) // Middleware to parse JSON
 
 // Function to capture a screenshot and store it temporarily
-async function captureScreenshot(url) {
+async function captureScreenshot(url, delay = 5000) {
+  // Default delay set to 3000 milliseconds (3 seconds)
   const browser = await puppeteer.connect({
     browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS_API_KEY}`,
   })
   const page = await browser.newPage()
   await page.goto(url)
+
+  await page.waitForTimeout(delay) // Wait for the specified delay
 
   // Use the /tmp directory for temporary storage
   const tempPath = `/tmp/screenshot_${Date.now()}.png`
@@ -31,7 +33,7 @@ app.get("/", async (req, res) => {
     const results = []
 
     for (const url of urls) {
-      const tempScreenshotPath = await captureScreenshot(url)
+      const tempScreenshotPath = await captureScreenshot(url) // Delay is used here
 
       // Read the screenshot file and send it as a base64 encoded string
       const fileContent = fs.readFileSync(tempScreenshotPath, {
